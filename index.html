@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="מבצעים">
+  <meta name="theme-color" content="#0f2418">
+  <title>מוצא מבצעים 🛒</title>
+  <link rel="manifest" href="manifest.json">
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a1a0f;
+      --surface: #111f16;
+      --surface2: #172b1e;
+      --accent: #3ddc68;
+      --accent2: #27ae47;
+      --gold: #f4c842;
+      --red: #ff4d4d;
+      --text: #e8f5ec;
+      --muted: #6b9a78;
+      --border: #1e3828;
+      --card: #13261a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Heebo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(180deg, #0a2512 0%, var(--surface) 100%);
+      padding: 50px 20px 24px;
+      text-align: center;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(61,220,104,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .logo {
+      font-size: 48px;
+      margin-bottom: 6px;
+      display: block;
+      filter: drop-shadow(0 0 20px rgba(61,220,104,0.4));
+    }
+
+    .header h1 {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+    }
+
+    .header p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── Main button ── */
+    .run-section {
+      padding: 28px 20px 20px;
+      text-align: center;
+    }
+
+    .run-btn {
+      width: 100%;
+      max-width: 360px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      color: #0a1a0f;
+      font-family: 'Heebo', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 24px rgba(61,220,104,0.3);
+    }
+
+    .run-btn:active { transform: scale(0.97); }
+    .run-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .run-btn .shimmer {
+      position: absolute;
+      top: 0; left: -100%; width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 200%; }
+    }
+
+    /* ── Status bar ── */
+    .status-bar {
+      margin: 0 20px 20px;
+      padding: 12px 16px;
+      background: var(--surface2);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--muted);
+      text-align: center;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .status-bar.running { color: var(--accent); border-color: rgba(61,220,104,0.3); }
+    .status-bar.success { color: #7ec891; border-color: rgba(61,220,104,0.2); }
+    .status-bar.error { color: var(--red); border-color: rgba(255,77,77,0.3); }
+
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(61,220,104,0.3);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Stats row ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      padding: 0 20px 20px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 10px;
+      text-align: center;
+    }
+
+    .stat-card .val {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .stat-card .lbl {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── Section title ── */
+    .section-title {
+      padding: 0 20px 12px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ── Deal cards ── */
+    .deals-list {
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .deal-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: fadeUp 0.3s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .deal-badge {
+      background: linear-gradient(135deg, #1a4a2a, #2d7a3a);
+      border: 1px solid rgba(61,220,104,0.3);
+      border-radius: 10px;
+      padding: 8px 6px;
+      text-align: center;
+      min-width: 52px;
+      flex-shrink: 0;
+    }
+
+    .deal-badge .pct {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .deal-badge .arrow {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .deal-info { flex: 1; min-width: 0; }
+
+    .deal-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .deal-chain {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .deal-prices {
+      text-align: left;
+      flex-shrink: 0;
+    }
+
+    .deal-prices .now {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .deal-prices .was {
+      font-size: 11px;
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+
+    .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-state p { font-size: 15px; line-height: 1.6; }
+
+    /* ── Setup banner ── */
+    .setup-banner {
+      margin: 0 20px 20px;
+      padding: 16px;
+      background: linear-gradient(135deg, #1a1a0a, #2a2a10);
+      border: 1px solid rgba(244,200,66,0.3);
+      border-radius: 12px;
+    }
+
+    .setup-banner h3 {
+      font-size: 14px;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .setup-banner p {
+      font-size: 13px;
+      color: #b8aa7a;
+      line-height: 1.6;
+    }
+
+    /* ── Backend URL input ── */
+    .config-section {
+      padding: 0 20px 20px;
+    }
+
+    .config-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .config-input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: var(--text);
+      font-family: 'Heebo', sans-serif;
+      font-size: 14px;
+      outline: none;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .config-input:focus { border-color: var(--accent); }
+
+    .save-btn {
+      margin-top: 8px;
+      width: 100%;
+      padding: 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--muted);
+      font-family: 'Heebo', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .save-btn:active { background: var(--border); }
+
+    /* ── Chain pills ── */
+    .chains-row {
+      display: flex;
+      gap: 8px;
+      padding: 0 20px 20px;
+      flex-wrap: wrap;
+    }
+
+    .chain-pill {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--muted);
+    }
+
+    .chain-pill.active {
+      border-color: rgba(61,220,104,0.4);
+      color: var(--accent);
+      background: rgba(61,220,104,0.08);
+    }
+
+    /* ── Footer ── */
+    .footer {
+      padding: 24px 20px 40px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <span class="logo">🛒</span>
+  <h1>מוצא מבצעים</h1>
+  <p>שופרסל • רמי לוי • טיב טעם</p>
+</div>
+
+<div class="run-section">
+  <button class="run-btn" id="runBtn" onclick="runCheck()">
+    <span class="shimmer"></span>
+    🔍 הרץ בדיקה
+  </button>
+</div>
+
+<div class="status-bar" id="statusBar">
+  לחץ "הרץ בדיקה" כדי למצוא מבצעים
+</div>
+
+<div class="stats-row" id="statsRow" style="display:none">
+  <div class="stat-card">
+    <div class="val" id="statDeals">0</div>
+    <div class="lbl">מבצעים</div>
+  </div>
+  <div class="stat-card">
+    <div class="val" id="statProducts">0</div>
+    <div class="lbl">מוצרים</div>
+  </div>
+  <div class="stat-card">
+    <div class="val" id="statChains">3</div>
+    <div class="lbl">רשתות</div>
+  </div>
+</div>
+
+<div id="chainsRow" class="chains-row" style="display:none">
+  <div class="chain-pill" id="pill-shufersal">🔵 שופרסל</div>
+  <div class="chain-pill" id="pill-rami_levy">🟢 רמי לוי</div>
+  <div class="chain-pill" id="pill-tiv_taam">🟡 טיב טעם</div>
+</div>
+
+<div id="setupBanner" class="setup-banner">
+  <h3>⚙️ הגדרה ראשונית נדרשת</h3>
+  <p>
+    הכנס את כתובת השרת שהתקנת ב-Render.com<br>
+    (ראה הוראות בקובץ README)
+  </p>
+</div>
+
+<div class="config-section">
+  <label class="config-label">כתובת השרת (Backend URL)</label>
+  <input class="config-input" id="backendUrl" type="url"
+    placeholder="https://your-app.onrender.com"
+    value="">
+  <button class="save-btn" onclick="saveUrl()">💾 שמור כתובת</button>
+</div>
+
+<div id="dealsSection" style="display:none">
+  <div class="section-title" id="dealsTitle">מבצעים שנמצאו</div>
+  <div class="deals-list" id="dealsList"></div>
+</div>
+
+<div id="emptyState" class="empty-state" style="display:none">
+  <div class="icon">😴</div>
+  <p>אין מבצעים משמעותיים כרגע.<br>נסה שוב מחר!</p>
+</div>
+
+<div class="footer">
+  מבוסס על <strong>חוק שקיפות מחירים</strong> ישראלי<br>
+  הנתונים מגיעים ישירות מהרשתות<br>
+  בדיקת מחירים מול ממוצע 8 שבועות
+</div>
+
+<script>
+  // ── Config ──
+  const STORAGE_KEY = 'supermarket_backend_url';
+
+  function getBackendUrl() {
+    return localStorage.getItem(STORAGE_KEY) || '';
+  }
+
+  function saveUrl() {
+    const url = document.getElementById('backendUrl').value.trim().replace(/\/$/, '');
+    if (!url) { alert('אנא הכנס כתובת URL'); return; }
+    localStorage.setItem(STORAGE_KEY, url);
+    document.getElementById('setupBanner').style.display = 'none';
+    setStatus('success', '✅ כתובת נשמרה! עכשיו לחץ "הרץ בדיקה"');
+  }
+
+  // ── On load ──
+  window.addEventListener('load', () => {
+    const saved = getBackendUrl();
+    if (saved) {
+      document.getElementById('backendUrl').value = saved;
+      document.getElementById('setupBanner').style.display = 'none';
+      loadLastResults();
+    }
+  });
+
+  // ── Status helper ──
+  function setStatus(type, msg, spinner = false) {
+    const el = document.getElementById('statusBar');
+    el.className = 'status-bar ' + type;
+    el.innerHTML = spinner
+      ? `<div class="spinner"></div><span>${msg}</span>`
+      : msg;
+  }
+
+  // ── Load last results ──
+  async function loadLastResults() {
+    const url = getBackendUrl();
+    if (!url) return;
+    try {
+      const res = await fetch(url + '/deals');
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.timestamp) renderResults(data);
+    } catch (e) { /* silent */ }
+  }
+
+  // ── Run check ──
+  async function runCheck() {
+    const url = getBackendUrl();
+    if (!url) {
+      alert('אנא הכנס ושמור קודם את כתובת השרת');
+      return;
+    }
+
+    const btn = document.getElementById('runBtn');
+    btn.disabled = true;
+    setStatus('running', 'מוריד מחירים מהרשתות...', true);
+    document.getElementById('dealsSection').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'none';
+
+    try {
+      // Start the check
+      const res = await fetch(url + '/run', { method: 'POST' });
+      if (!res.ok) throw new Error('שגיאת שרת');
+
+      setStatus('running', 'מעבד מחירים ומחפש מבצעים...', true);
+
+      // Poll for results (backend runs async)
+      await pollForResults(url);
+
+    } catch (e) {
+      setStatus('error', '❌ שגיאה: ' + e.message + ' — בדוק שהשרת פעיל');
+      btn.disabled = false;
+    }
+  }
+
+  async function pollForResults(url, attempts = 0) {
+    if (attempts > 30) {
+      setStatus('error', '⏱️ הבדיקה לקחה יותר מדי זמן. נסה שוב.');
+      document.getElementById('runBtn').disabled = false;
+      return;
+    }
+
+    await sleep(4000);
+
+    try {
+      const res = await fetch(url + '/deals');
+      const data = await res.json();
+
+      const lastRun = new Date(data.timestamp);
+      const now = new Date();
+      const diffMin = (now - lastRun) / 1000 / 60;
+
+      if (diffMin < 3) {
+        // Fresh results!
+        renderResults(data);
+        document.getElementById('runBtn').disabled = false;
+      } else {
+        setStatus('running', `ממתין לתוצאות... (${attempts + 1}/30)`, true);
+        pollForResults(url, attempts + 1);
+      }
+    } catch (e) {
+      pollForResults(url, attempts + 1);
+    }
+  }
+
+  function renderResults(data) {
+    const deals = data.deals || [];
+    const chains = data.chains_fetched || {};
+
+    // Stats
+    const totalProducts = Object.values(chains).reduce((a, b) => a + b, 0);
+    document.getElementById('statDeals').textContent = deals.length;
+    document.getElementById('statProducts').textContent = totalProducts > 999
+      ? (totalProducts / 1000).toFixed(1) + 'k' : totalProducts;
+    document.getElementById('statsRow').style.display = 'grid';
+    document.getElementById('chainsRow').style.display = 'flex';
+
+    // Chain pills
+    for (const [id, count] of Object.entries(chains)) {
+      const pill = document.getElementById('pill-' + id);
+      if (pill && count > 0) pill.classList.add('active');
+    }
+
+    const ts = data.timestamp
+      ? new Date(data.timestamp).toLocaleString('he-IL')
+      : '';
+
+    const emailMsg = data.email_sent ? ' | 📧 נשלח מייל' : '';
+
+    if (deals.length === 0) {
+      setStatus('success', `✅ בדיקה הושלמה ${ts}${emailMsg} — אין מבצעים`);
+      document.getElementById('emptyState').style.display = 'block';
+      return;
+    }
+
+    setStatus('success', `✅ ${ts}${emailMsg}`);
+
+    // Deals list
+    const chainNames = {
+      shufersal: 'שופרסל 🔵',
+      rami_levy: 'רמי לוי 🟢',
+      tiv_taam: 'טיב טעם 🟡',
+    };
+
+    // Count per chain
+    const perChain = {};
+    deals.forEach(d => { perChain[d.chain] = (perChain[d.chain] || 0) + 1; });
+    const chainSummary = Object.entries(perChain)
+      .map(([id, n]) => `${chainNames[id] || id}: ${n}`)
+      .join(' | ');
+
+    document.getElementById('dealsTitle').textContent =
+      `🔥 ${deals.length} מבצעים — ${chainSummary}`;
+
+    const list = document.getElementById('dealsList');
+    list.innerHTML = deals.map((d, i) => `
+      <div class="deal-card" style="animation-delay:${i * 40}ms">
+        <div class="deal-badge">
+          <div class="pct">↓${d.drop_pct}%</div>
+          <div class="arrow">הנחה</div>
+        </div>
+        <div class="deal-info">
+          <div class="deal-name">${d.name}</div>
+          <div class="deal-chain">${chainNames[d.chain] || d.chain}</div>
+        </div>
+        <div class="deal-prices">
+          <div class="now">₪${d.current_price.toFixed(2)}</div>
+          <div class="was">₪${d.avg_price.toFixed(2)}</div>
+        </div>
+      </div>
+    `).join('');
+
+    document.getElementById('dealsSection').style.display = 'block';
+  }
+
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+</script>
+</body>
+</html>

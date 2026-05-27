@@ -1,0 +1,19 @@
+name: Daily Price Check
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # Every day at 08:00 Israel time (UTC+2)
+  workflow_dispatch:       # Allow manual trigger from GitHub
+
+jobs:
+  check-prices:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger price check
+        run: |
+          echo "Triggering supermarket price check..."
+          curl -X POST "${{ secrets.BACKEND_URL }}/run" \
+            -H "Content-Type: application/json" \
+            --max-time 10 \
+            --silent
+          echo "Done! Check your Gmail in a few minutes."
